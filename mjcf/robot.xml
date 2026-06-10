@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mujoco model="independent_steering_wheel_robot_v1">
+  <compiler angle="radian" autolimits="true"/>
+  <option timestep="0.001" iterations="50" tolerance="1e-10"/>
+  
+  <asset>
+    <texture name="texplane" type="2d" builtin="checker" rgb1=".2 .3 .4" rgb2=".1 .2 .3" width="512" height="512" mark="none"/>
+    <material name="matplane" reflectance="0.2" texture="texplane" texrepeat="1 1" texuniform="true"/>
+  </asset>
+
+  <include file="obstacles.xml"/>
+  <worldbody>
+    <geom name="floor" pos="0 0 0" size="0 0 0.5" type="plane" material="matplane" condim="3"/>
+    <light directional="true" diffuse=".8 .8 .8" specular=".2 .2 .2" pos="0 0 5" dir="0 0 -1"/>
+
+    <body name="chassis" pos="0.0 0.0 0.5">
+      <freejoint />
+      <geom name="base_link" type="box" mass="1.0" pos="0.0 0 0.0" size="1 0.5 0.03" rgba="1 1 1 0.4" />
+      <site name="imu_site" pos="0 0 0" />
+
+      <!-- body要设置为真正在的转轴处 -->
+      <body name="steering1" pos="0.8 0.3 -0.03">
+        <geom name="steering_geom1" type="cylinder" mass="0.1" pos="0.0 0.0 -0.02" size="0.2 0.02" rgba="1 1 1 0.4"/>
+        <joint name="steering_j1" type="hinge" axis="0 0 1"  damping="0.1"/>
+
+        <body name="wheel1" pos="0.0 0.0 -0.16" quat="0.70710678 0.70710678 0.0 0.0">
+          <geom name="wheel_geom1" type="cylinder" mass="0.5" pos="0.0 0.0 0.0" size="0.15 0.1" rgba="1 0.752941 0.796078 1"/>
+          <joint name="wheel_j1" type="hinge" axis="0 0 1" damping="0.1"/>
+        </body>
+      </body>
+
+      <body name="steering2" pos="0.8 -0.3 -0.03">
+        <geom name="steering_geom2" type="cylinder" mass="0.1" pos="0.0 0.0 -0.02" size="0.2 0.02" rgba="1 1 1 0.4"/>
+        <joint name="steering_j2" type="hinge" axis="0 0 1" damping="0.1"/>
+
+        <body name="wheel2" pos="0.0 0.0 -0.16" quat="0.70710678 0.70710678 0.0 0.0">
+          <geom name="wheel_geom2" type="cylinder" mass="0.5" pos="0.0 0.0 0.0" size="0.15 0.1" rgba="1 0.752941 0.796078 1"/>
+          <joint name="wheel_j2" type="hinge" axis="0 0 1" damping="0.1"/>
+        </body>
+      </body>
+
+      <body name="steering3" pos="-0.8 0.3 -0.03">
+        <geom name="steering_geom3" type="cylinder" mass="0.1" pos="0.0 0.0 -0.02" size="0.2 0.02" rgba="1 1 1 0.4"/>
+        <joint name="steering_j3" type="hinge" axis="0 0 1" damping="0.1"/>
+
+        <body name="wheel3" pos="0.0 0.0 -0.16" quat="0.70710678 0.70710678 0.0 0.0">
+          <geom name="wheel_geom3" type="cylinder" mass="0.5" pos="0.0 0.0 0.0" size="0.15 0.1" rgba="1 0.752941 0.796078 1"/>
+          <joint name="wheel_j3" type="hinge" axis="0 0 1" damping="0.1"/>
+        </body>
+      </body>
+
+      <body name="steering4" pos="-0.8 -0.3 -0.03">
+        <geom name="steering_geom4" type="cylinder" mass="0.1" pos="0.0 0.0 -0.02" size="0.2 0.02" rgba="1 1 1 0.4"/>
+        <joint name="steering_j4" type="hinge" axis="0 0 1"  damping="0.1"/>
+
+        <body name="wheel4" pos="0.0 0.0 -0.16" quat="0.70710678 0.70710678 0.0 0.0">
+          <geom name="wheel_geom4" type="cylinder" mass="0.5" pos="0.0 0.0 0.0" size="0.15 0.1" rgba="1 0.752941 0.796078 1"/>
+          <joint name="wheel_j4" type="hinge" axis="0 0 1" damping="0.1"/>
+        </body>
+      </body>
+    </body>
+  </worldbody>
+
+  <contact>
+    <exclude body1="chassis" body2="steering1"/>
+    <exclude body1="chassis" body2="steering2"/>
+    <exclude body1="chassis" body2="steering3"/>
+    <exclude body1="chassis" body2="steering4"/>
+
+    <exclude body1="steering1" body2="wheel1"/>
+    <exclude body1="steering2" body2="wheel2"/>
+    <exclude body1="steering3" body2="wheel3"/>
+    <exclude body1="steering4" body2="wheel4"/>
+
+  </contact>
+
+  <actuator>
+    <position joint="steering_j1" name="steering1" kp="5"  />
+    <velocity joint="wheel_j1" kv="10" name="wheel1" ctrlrange="-10 10" />
+
+    <position joint="steering_j2" name="steering2" kp="5" />
+    <velocity joint="wheel_j2" kv="10" name="wheel2" ctrlrange="-10 10" />
+
+    <position joint="steering_j3" name="steering3" kp="5"  />
+    <velocity joint="wheel_j3" kv="10" name="wheel3" ctrlrange="-10 10" />
+
+    <position joint="steering_j4" name="steering4" kp="5" />
+    <velocity joint="wheel_j4" kv="10" name="wheel4" ctrlrange="-10 10" />
+  </actuator>
+
+  <sensor>
+    <jointpos name="steering_j1_pos" joint="steering_j1" />
+    <jointvel name="steering_j1_vel" joint="steering_j1" />
+    <jointpos name="steering_j2_pos" joint="steering_j2" />
+    <jointvel name="steering_j2_vel" joint="steering_j2" />
+    <jointpos name="steering_j3_pos" joint="steering_j3" />
+    <jointvel name="steering_j3_vel" joint="steering_j3" />
+    <jointpos name="steering_j4_pos" joint="steering_j4" />
+    <jointvel name="steering_j4_vel" joint="steering_j4" />
+
+    <jointpos name="wheel_j1_pos" joint="wheel_j1" />
+    <jointvel name="wheel_j1_vel" joint="wheel_j1" />
+    <jointpos name="wheel_j2_pos" joint="wheel_j2" />
+    <jointvel name="wheel_j2_vel" joint="wheel_j2" />
+    <jointpos name="wheel_j3_pos" joint="wheel_j3" />
+    <jointvel name="wheel_j3_vel" joint="wheel_j3" />
+    <jointpos name="wheel_j4_pos" joint="wheel_j4" />
+    <jointvel name="wheel_j4_vel" joint="wheel_j4" />
+
+    <!-- IMU: chassis body 的四元数姿态 -->
+    <framequat name="orientation" objtype="body" objname="chassis"/>
+    <!-- IMU: chassis body 的三轴角速度（陀螺仪） -->
+    <gyro name="angular_vel" site="imu_site"/>
+  </sensor>
+
+</mujoco>
